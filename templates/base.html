@@ -1,0 +1,66 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}MoodBrew — Emotional Alchemy Lab{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="deco-float" style="top: 10%; left: 5%;">🧪</div>
+    <div class="deco-float" style="top: 20%; right: 10%; animation-delay: -1s;">✨</div>
+    <div class="deco-float" style="bottom: 15%; left: 8%; animation-delay: -2s;">🔮</div>
+    <div class="deco-float" style="top: 50%; right: 5%; animation-delay: -3s;">🌙</div>
+
+    <nav class="topbar">
+        <a href="{% url 'dashboard' %}" class="topbar-brand">
+            <span>🧪</span> MoodBrew
+        </a>
+        <div class="topbar-nav">
+            {% if user.is_authenticated %}
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'potion_list' %}">My Potions</a>
+                <a href="{% url 'potion_create' %}" class="btn btn-sm btn-brew">Brew New</a>
+            {% endif %}
+        </div>
+        <div class="topbar-right">
+            {% if user.is_authenticated %}
+                <span>👋 {{ user.username }}</span>
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-ghost">Logout</button>
+                </form>
+            {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                <a href="{% url 'register' %}" class="btn btn-sm btn-brew">Register</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+                        {{ message }}
+                        <button class="alert-dismiss">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <main>
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <footer class="footer">
+        🧪 MoodBrew — Crafted for Unit 3 App Development Review • Django 6.1
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

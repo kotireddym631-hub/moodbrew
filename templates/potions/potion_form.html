@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load brew_tags %}
+{% block content %}
+<div class="page-hero text-center">
+  <h1>{{ page_title|default:"🧪 Brew a Potion" }}</h1>
+</div>
+
+<div class="clay-card" style="padding: 2rem; max-width: 800px; margin: 0 auto;">
+  <form method="POST">
+    {% csrf_token %}
+    {% if form.errors %}
+    <div class="alert-error" style="background: #ffebee; color: #c62828; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+      Please correct the errors below.
+      {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <label class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Title</label>
+      {{ form.title }}
+      {% if form.title.errors %}<div class="form-errors" style="color: red; font-size: 0.85rem;">{{ form.title.errors }}</div>{% endif %}
+    </div>
+
+    <div class="ingredients-section" style="margin-bottom: 2rem;">
+      <h3 style="margin-bottom: 1rem;">Pick Your Ingredients ✨</h3>
+      {% if emotions_grouped %}
+        {% for category, emotions in emotions_grouped.items %}
+        <div style="margin-bottom: 1.5rem;">
+          <h4 style="margin-bottom: 0.5rem; color: #666;">{{ category }}</h4>
+          <div class="form-checkbox-grid" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+            {% for emotion in emotions %}
+            <label class="checkbox-pill" style="cursor: pointer;">
+              <input type="checkbox" name="ingredients" value="{{ emotion.pk }}" {% if emotion.pk|stringformat:"s" in form.ingredients.value|stringformat:"s" or emotion.pk in form.ingredients.value %}checked{% endif %} class="emotion-checkbox" style="display: none;">
+              <span class="emotion-chip {{ emotion.css_class }}" style="display: inline-block; padding: 0.5rem 1rem; border-radius: 20px; background: #eee; border: 2px solid transparent;">{{ emotion.emoji }} {{ emotion.name }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        {{ form.ingredients }}
+      {% endif %}
+      {% if form.ingredients.errors %}<div class="form-errors" style="color: red; font-size: 0.85rem;">{{ form.ingredients.errors }}</div>{% endif %}
+    </div>
+
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <label class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Vibe Rating (1-10)</label>
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <input type="range" name="vibe_rating" min="1" max="10" value="{{ form.vibe_rating.value|default:5 }}" class="form-input" id="id_vibe_rating" style="flex: 1;">
+        <span id="vibe-display" style="font-size: 1.5rem; font-weight: bold; width: 60px; text-align: center;">{{ form.vibe_rating.value|default:5 }}</span>
+      </div>
+      {% if form.vibe_rating.errors %}<div class="form-errors" style="color: red; font-size: 0.85rem;">{{ form.vibe_rating.errors }}</div>{% endif %}
+    </div>
+
+    <div class="form-group" style="margin-bottom: 1.5rem;">
+      <label class="form-label" style="display: block; margin-bottom: 0.5rem; font-weight: bold;">Reflection</label>
+      {{ form.reflection }}
+      {% if form.reflection.errors %}<div class="form-errors" style="color: red; font-size: 0.85rem;">{{ form.reflection.errors }}</div>{% endif %}
+    </div>
+
+    <div class="form-group" style="margin-bottom: 2rem;">
+      <label class="checkbox-pill" style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+        {{ form.is_favorite }}
+        <span style="font-weight: bold;">Bookmark as favorite ⭐</span>
+      </label>
+    </div>
+
+    <div style="display: flex; gap: 1rem; align-items: center;">
+      <button type="submit" class="btn btn-brew" style="flex: 1;">{{ submit_label|default:"Brew Potion 🧪" }}</button>
+      <a href="javascript:history.back()" class="btn btn-ghost">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const emojis = {
+      1: '😭', 2: '😢', 3: '☹️', 4: '😕', 5: '😐',
+      6: '🙂', 7: '😊', 8: '😄', 9: '✨', 10: '🔮'
+    };
+    const slider = document.getElementById('id_vibe_rating');
+    const display = document.getElementById('vibe-display');
+    if(slider && display) {
+      function updateDisplay() {
+        const val = slider.value;
+        const emoji = emojis[val] || '😐';
+        display.innerHTML = `${val} ${emoji}`;
+      }
+      slider.addEventListener('input', updateDisplay);
+      updateDisplay();
+    }
+    
+    // Checkbox pill visual toggle logic
+    document.querySelectorAll('.emotion-checkbox').forEach(cb => {
+      const chip = cb.nextElementSibling;
+      const updateStyles = () => {
+        if(cb.checked) {
+          chip.style.borderColor = 'var(--color-primary)';
+          chip.style.transform = 'scale(1.05)';
+        } else {
+          chip.style.borderColor = 'transparent';
+          chip.style.transform = 'scale(1)';
+        }
+      };
+      cb.addEventListener('change', updateStyles);
+      updateStyles();
+    });
+  });
+</script>
+{% endblock %}

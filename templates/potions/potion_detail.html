@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load brew_tags %}
+{% block content %}
+<a href="{% url 'potion_list' %}" class="btn btn-ghost btn-sm" style="margin-bottom: 1rem; display: inline-block;">&larr; Back to Potions</a>
+
+<div class="detail-grid" style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem;">
+  <div class="detail-left">
+    <div class="clay-card" style="padding: 2rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+        <h1 style="margin: 0;">{{ potion.title }}</h1>
+        <div style="font-size: 1.5rem;">{% if potion.is_favorite %}⭐{% endif %}</div>
+      </div>
+      <div style="color: #666; margin-bottom: 2rem;">{{ potion.brewed_at|date:'M d, Y, P' }}</div>
+      
+      <h3 style="margin-bottom: 1rem;">Ingredients</h3>
+      <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem;">
+        {% for ingredient in potion.ingredients.all %}
+        {{ ingredient|chip_html|safe }}
+        {% endfor %}
+      </div>
+      
+      <h3 style="margin-bottom: 1rem;">Reflection</h3>
+      <blockquote style="background: rgba(255,255,255,0.5); padding: 1.5rem; border-radius: 12px; border-left: 4px solid var(--color-primary); font-style: italic;">
+        {{ potion.reflection|linebreaks }}
+      </blockquote>
+    </div>
+  </div>
+  <div class="detail-right">
+    <div class="clay-card text-center" style="padding: 2rem; margin-bottom: 1rem;">
+      <h3>Vibe Reading</h3>
+      <div style="font-size: 3rem; font-weight: bold; margin: 1rem 0;">
+        {{ potion.vibe_rating }} <span style="font-size: 2.5rem;">{{ potion.vibe_rating|vibe_emoji }}</span>
+      </div>
+      <div style="margin-bottom: 1rem;">{{ potion.vibe_rating|vibe_stars }}</div>
+      <div class="potion-vibe-bar" style="height: 12px; background: #eee; border-radius: 6px; margin-bottom: 0.5rem;">
+        <div class="potion-vibe-fill" style="height: 100%; background: var(--color-primary); border-radius: 6px; width: {{ potion.vibe_percentage }}%;"></div>
+      </div>
+      <div style="font-weight: bold; color: var(--color-primary);">{{ potion.vibe_label|default:"Vibe" }}</div>
+    </div>
+    
+    <div class="action-buttons" style="display: flex; flex-direction: column; gap: 0.5rem;">
+      <a href="{% url 'potion_update' potion.pk %}" class="btn btn-ghost" style="text-align: center;">Edit Potion</a>
+      <a href="{% url 'toggle_favorite' potion.pk %}" class="btn btn-ghost" style="text-align: center;">Toggle Favorite</a>
+      <a href="{% url 'potion_delete' potion.pk %}" class="btn btn-danger btn-sm" style="text-align: center; margin-top: 1rem;">Delete Potion</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

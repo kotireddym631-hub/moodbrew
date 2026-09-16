@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="auth-container" style="max-width: 460px; margin: 0 auto;">
+  <div class="auth-card clay-card" style="padding: 2rem;">
+    <h2 class="text-center">🧪 Join the Alchemy Lab</h2>
+    <p class="text-center">Create your account and start brewing emotional potions</p>
+    <form method="POST" novalidate>
+      {% csrf_token %}
+      {% for field in form %}
+      <div class="form-group">
+        <label class="form-label">{{ field.label }}</label>
+        {{ field }}
+        <div class="form-hint">{{ field.help_text }}</div>
+        {% if field.errors %}
+        <div class="form-errors">
+          {% for e in field.errors %}{{ e }}{% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-brew" style="width: 100%;">Create My Cauldron 🧪</button>
+    </form>
+    <div class="text-center" style="margin-top: 1rem;">
+      <a href="{% url 'login' %}" class="subtle-link">Already have an account?</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

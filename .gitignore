@@ -1,0 +1,13 @@
+__pycache__/
+*.py[cod]
+*.so
+env/
+venv/
+.venv
+db.sqlite3
+db.sqlite3-journal
+/staticfiles_build/
+.vscode/
+.idea/
+.vercel
+*.log

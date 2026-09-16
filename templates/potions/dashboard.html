@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load brew_tags %}
+{% block content %}
+<div class="page-hero text-center">
+  <h1>🧪 Your Alchemy Dashboard</h1>
+  <p>Welcome back, {{ user.username }}! Here's your emotional weather report.</p>
+</div>
+
+<div class="stats-row" style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 2rem;">
+  <div class="stat-bubble clay-card text-center" style="padding: 1rem;">
+    <h3>{{ total_brews }}</h3>
+    <p>potions brewed</p>
+  </div>
+  <div class="stat-bubble clay-card text-center" style="padding: 1rem;">
+    <h3>{{ avg_vibe|default:"0" }}/10 {{ avg_vibe|vibe_emoji }}</h3>
+    <p>average vibe</p>
+  </div>
+  <div class="stat-bubble clay-card text-center" style="padding: 1rem;">
+    <h3>{{ favorites }}</h3>
+    <p>bookmarked</p>
+  </div>
+</div>
+
+{% if total_brews == 0 %}
+<div class="clay-card text-center" style="padding: 2rem; max-width: 600px; margin: 0 auto;">
+  <h2>Your cauldron is empty!</h2>
+  <p>Time to brew your first potion.</p>
+  <a href="{% url 'potion_create' %}" class="btn btn-brew mt-3">Brew New Potion 🧪</a>
+</div>
+{% else %}
+<div class="dashboard-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+  <div class="clay-card">
+    <h3>Vibe Weather Report</h3>
+    {% for label, count, percentage in vibe_dist %}
+    <div class="vibe-bar-row" style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+      <div style="width: 80px;">{{ label }} ({{ count }})</div>
+      <div class="vibe-bar-container" style="flex: 1; background: #eee; border-radius: 8px; height: 16px; margin-left: 1rem;">
+        <div class="vibe-bar-fill" style="width: {{ percentage }}%; background: var(--color-primary); border-radius: 8px; height: 100%;"></div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div class="clay-card">
+    <h3>Your Go-To Ingredients</h3>
+    <div class="ingredients-list" style="margin-top: 1rem;">
+      {% for emotion in top_emotions %}
+      <div style="margin-bottom: 0.65rem; display: flex; align-items: center; gap: 0.5rem;">
+        {{ emotion|chip_html }} <span class="text-muted" style="font-weight: bold; font-size: 0.85rem;">× {{ emotion.usage }}</span>
+      </div>
+      {% empty %}
+      <p style="color: #888; font-size: 0.9rem;">No ingredients used yet!</p>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<div class="clay-card" style="margin-bottom: 2rem;">
+  <h3>Recent Potions</h3>
+  <div class="recent-potions-grid" style="display: flex; flex-direction: column; gap: 1rem;">
+    {% for potion in recent_potions %}
+    <div class="recent-potion-card" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid #ddd; border-radius: 8px;">
+      <div>
+        <a href="{% url 'potion_detail' potion.pk %}" style="font-weight: bold; font-size: 1.1rem;">{{ potion.title }}</a>
+        <div style="color: #666; font-size: 0.9rem;">{{ potion.brewed_at|date:'M d, Y' }}</div>
+      </div>
+      <div>{{ potion.vibe_rating|vibe_stars }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+<div class="dashboard-actions text-center" style="margin-top: 2rem;">
+  <a href="{% url 'potion_create' %}" class="btn btn-brew">Brew New Potion</a>
+  <a href="{% url 'potion_list' %}" class="btn btn-ghost">View All Potions</a>
+</div>
+{% endblock %}

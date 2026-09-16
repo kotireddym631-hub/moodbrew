@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="max-width: 500px; margin: 0 auto; margin-top: 4rem;">
+  <div class="clay-card text-center" style="padding: 3rem; background: #fff5f5; border: 2px solid #ffcdd2;">
+    <h2 style="color: #c62828; margin-bottom: 1rem;">⚠️ Discard This Potion?</h2>
+    
+    <div style="margin-bottom: 2rem; background: white; padding: 1.5rem; border-radius: 12px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);">
+      <h3 style="margin-bottom: 0.5rem;">{{ potion.title }}</h3>
+      <p style="color: #666; margin-bottom: 0.5rem;">Vibe Rating: {{ potion.vibe_rating }}/10</p>
+      <p style="color: #666; font-size: 0.85rem;">Brewed on {{ potion.brewed_at|date:'M d, Y' }}</p>
+    </div>
+    
+    <p style="margin-bottom: 2rem; color: #444; font-weight: bold;">
+      Are you sure you want to discard this potion permanently? This action cannot be undone!
+    </p>
+    
+    <form method="POST">
+      {% csrf_token %}
+      <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="{% url 'potion_detail' potion.pk %}" class="btn btn-ghost">Cancel</a>
+        <button type="submit" class="btn btn-danger">Discard Potion</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}
